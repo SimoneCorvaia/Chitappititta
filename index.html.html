@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chi T'Appititta — Menù</title>
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Libre+Baskerville:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:    #faf8f2;
+    --paper: #f5f1e6;
+    --dark:  #1a1a18;
+    --green: #4a5e2f;
+    --gold:  #b8962e;
+    --red:   #8b1e2f;
+    --muted: #6b6050;
+    --rule:  #c8bfa8;
+  }
+  body {
+    background: var(--bg);
+    color: var(--dark);
+    font-family: 'Special Elite', 'Courier New', monospace;
+    -webkit-print-color-adjust: exact;
+  }
+  .lang-bar {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; justify-content: center;
+    background: var(--dark);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.28);
+  }
+  .lang-btn {
+    font-family: 'Special Elite', monospace;
+    font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
+    padding: 11px 32px; border: none; cursor: pointer;
+    transition: background 0.22s, color 0.22s;
+    background: transparent; color: var(--rule);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .lang-btn .flag { font-size: 16px; }
+  .lang-btn.active { background: var(--gold); color: var(--dark); }
+  .lang-btn:hover:not(.active) { background: rgba(255,255,255,0.08); color: #fff; }
+  .lang-page { display: none; }
+  .lang-page.visible { display: block; }
+  .page {
+    max-width: 900px; margin: 0 auto;
+    padding: 48px 48px 44px;
+    background: var(--paper);
+    border-left: 4px solid var(--green);
+    border-right: 4px solid var(--red);
+  }
+  .header { text-align: center; margin-bottom: 44px; }
+  .header img { width: 180px; height: auto; display: block; margin: 0 auto 4px; mix-blend-mode: multiply; }
+  .header-rule { display: flex; align-items: center; gap: 12px; margin-top: 20px; justify-content: center; }
+  .header-rule span { height: 2px; width: 100px; background: var(--gold); display: block; }
+  .header-rule .sq { width: 7px; height: 7px; border: 2px solid var(--gold); transform: rotate(45deg); }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 52px; }
+  .section { margin-bottom: 36px; }
+  .section-title {
+    font-family: 'Special Elite', monospace;
+    font-size: 13px; letter-spacing: 4px; text-transform: uppercase;
+    text-align: center; color: var(--bg);
+    background: var(--green); padding: 6px 12px; margin-bottom: 14px;
+  }
+  .section-title.red  { background: var(--red); }
+  .section-title.gold { background: var(--gold); color: var(--dark); }
+  .item { padding: 9px 0; border-bottom: 1px dashed var(--rule); }
+  .item:last-child { border-bottom: none; }
+  .item-top { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; }
+  .item-name {
+    font-family: 'Special Elite', monospace;
+    font-size: 11px; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--dark); line-height: 1.3;
+  }
+  .item-price {
+    font-family: 'Special Elite', monospace;
+    font-size: 13px; color: var(--red); white-space: nowrap; flex-shrink: 0; font-weight: bold;
+  }
+  .item-desc {
+    font-family: 'Libre Baskerville', serif;
+    font-style: italic; font-size: 12px; color: var(--muted); margin-top: 2px; line-height: 1.45;
+  }
+  .full-section { margin-bottom: 36px; }
+  .section-title-full {
+    font-family: 'Special Elite', monospace;
+    font-size: 13px; letter-spacing: 4px; text-transform: uppercase;
+    text-align: center; color: var(--bg);
+    background: var(--green); padding: 6px 12px; margin-bottom: 16px;
+  }
+  .section-title-full.gold { background: var(--gold); color: var(--dark); }
+  .section-title-full.green { background: var(--green); }
+  .wine-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 52px; }
+  .bev-cols  { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 44px; }
+  .full-section + .full-section { border-top: 1px solid var(--rule); padding-top: 8px; }
+  .footer {
+    text-align: center; margin-top: 16px; padding-top: 18px;
+    border-top: 2px solid var(--gold);
+  }
+  .footer .coperto {
+    font-family: 'Special Elite', monospace;
+    font-size: 13px; color: var(--red); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px;
+  }
+  .footer p {
+    font-family: 'Libre Baskerville', serif;
+    font-style: italic; font-size: 11px; color: var(--muted); line-height: 1.8;
+  }
+  .lang-page.visible .header  { animation: fadeIn 0.4s ease both; }
+  .lang-page.visible .section { animation: fadeUp 0.5s ease both; }
+  .lang-page.visible .section:nth-child(1) { animation-delay: 0.05s; }
+  .lang-page.visible .section:nth-child(2) { animation-delay: 0.10s; }
+  .lang-page.visible .section:nth-child(3) { animation-delay: 0.15s; }
+  .lang-page.visible .section:nth-child(4) { animation-delay: 0.20s; }
+  .lang-page.visible .full-section { animation: fadeUp 0.5s ease both; }
+  .lang-page.visible .full-section:nth-child(1) { animation-delay: 0.25s; }
+  .lang-page.visible .full-section:nth-child(2) { animation-delay: 0.30s; }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+  @media (max-width: 660px) {
+    .page { padding: 28px 18px; border-left-width: 3px; border-right-width: 3px; }
+    .grid { grid-template-columns: 1fr; }
+    .wine-cols { grid-template-columns: 1fr; }
+    .bev-cols  { grid-template-columns: 1fr 1fr; }
+    .header img { width: 140px; }
+    .lang-btn { padding: 10px 20px; font-size: 11px; letter-spacing: 2px; }
+  }
+  @media (max-width: 400px) {
+    .bev-cols { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="lang-bar">
+  <button class="lang-btn active" onclick="switchLang('it', this)">
+    <span class="flag">🇮🇹</span> Italiano
+  </button>
+  <button class="lang-btn" onclick="switchLang('en', this)">
+    <span class="flag">🇬🇧</span> English
+  </button>
+</div>
+
+<div id="lang-it" class="lang-page visible">
+<div class="page">
+  <header class="header">
+    <img src="data:image/jpeg;base64,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" alt="Chi T'Appititta logo">
+    <div class="header-rule"><span></span><div class="sq"></div><span></span></div>
+  </header>
+  <div class="grid">
+    <div class="section">
+  <div class="section-title green">Antipasti</div>
+  <div class="item"><div class="item-top"><span class="item-name">Sashimi</span><span class="item-price">€ 20</span></div><div class="item-desc">Cipolla caramellata, lime, sale</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Selezione Salumi e Formaggi</span><span class="item-price">€ 25</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Carpaccio di Manzo</span><span class="item-price">€ 18</span></div><div class="item-desc">Rucola, grana, aceto balsamico e lime</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Tartare di Manzo</span><span class="item-price">€ 20</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Gran Crudo Chi T'Appititta</span><span class="item-price">€ 45</span></div><div class="item-desc">Tartare, carpacci, mozzarella di bufala</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Uovo all'occhio di bue</span><span class="item-price">€ 18</span></div><div class="item-desc">Tartufo e crema di parmigiano</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Uovo all'occhio di bue</span><span class="item-price">€ 15</span></div><div class="item-desc">Con tartufo</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Carpaccio con Tartufo</span><span class="item-price">€ 28</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Carpaccio di Wagyu Giapponese</span><span class="item-price">€ 35</span></div><div class="item-desc">Salsa di mango, basilico, peperoncino e soia</div></div>
+
+</div>
+    <div class="section">
+  <div class="section-title red">Primi Piatti</div>
+  <div class="item"><div class="item-top"><span class="item-name">Gnocco di Patata</span><span class="item-price">€ 18</span></div><div class="item-desc">Fonduta di piacentino, guanciale e bacon croccante</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Pappardelle</span><span class="item-price">€ 16</span></div><div class="item-desc">Ragù di cinghiale</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Tagliatelle</span><span class="item-price">€ 22</span></div><div class="item-desc">Funghi porcini</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Tagliolino al Tartufo</span><span class="item-price">€ 25</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Orecchiette</span><span class="item-price">€ 22</span></div><div class="item-desc">Vellutata di zucchine, carpaccio, burrata e mandorle</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Tagliolino Cacio e Pepe</span><span class="item-price">€ 25</span></div><div class="item-desc">Con tartare</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Tagliolini Zucca e Salsiccia</span><span class="item-price">€ 18</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Busiatine</span><span class="item-price">€ 22</span></div><div class="item-desc">Crema di zucchine, prosciutto crudo, burrata e mandorle tostate</div></div>
+
+</div>
+    <div class="section">
+  <div class="section-title gold">Secondi Piatti</div>
+  <div class="item"><div class="item-top"><span class="item-name">Tomahawk Steak</span><span class="item-price">€ 7/etto</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Costata</span><span class="item-price">€ 7/etto</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Fiorentina</span><span class="item-price">€ 7/etto</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Fiorentina Angus Miguel Vergara</span><span class="item-price">€ 95</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Costata Angus Miguel Vergara</span><span class="item-price">€ 90</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Cube Roll</span><span class="item-price">€ 30</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Tagliata di Manzo</span><span class="item-price">€ 25</span></div><div class="item-desc">Rucola, grana e aceto balsamico</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Tagliata di Manzo</span><span class="item-price">€ 25</span></div><div class="item-desc">Pecorino ragusano e cipolla caramellata</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Tagliata di Manzo</span><span class="item-price">€ 28</span></div><div class="item-desc">Noci, miele, pomodorino e bietole</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Tagliata di Angus</span><span class="item-price">€ 25</span></div><div class="item-desc">Peperoni arrosto, aglio, basilico e ricotta salata</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Filetto di Manzo</span><span class="item-price">€ 26</span></div><div class="item-desc">Crema di patate allo zafferano</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Filetto al Pepe Verde</span><span class="item-price">€ 35</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Filetto al Tartufo</span><span class="item-price">€ 35</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Cuore di Filetto</span><span class="item-price">€ 40</span></div><div class="item-desc">Porcini e tartufo</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Filetto ai Funghi Porcini</span><span class="item-price">€ 32</span></div></div>
+
+</div>
+    <div class="section">
+      <div class="section">
+  <div class="section-title green">Contorni</div>
+  <div class="item"><div class="item-top"><span class="item-name">Verdure Grigliate</span><span class="item-price">€ 5</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Patata Siracusana</span><span class="item-price">€ 6</span></div><div class="item-desc">Saltata in padella</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Patate Dippers</span><span class="item-price">€ 6</span></div><div class="item-desc">Fritte</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Insalata Mista</span><span class="item-price">€ 4</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Caponata</span><span class="item-price">€ 6</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Bietole</span><span class="item-price">€ 6</span></div></div>
+
+</div>
+      <div style="margin-top:24px">
+        <div class="section">
+  <div class="section-title red">Dessert</div>
+  <div class="item"><div class="item-top"><span class="item-name">Soufflé al Cioccolato</span><span class="item-price">€ 5</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Soufflé al Pistacchio</span><span class="item-price">€ 5</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Melissa's Tiramisù</span><span class="item-price">€ 6</span></div></div>
+
+</div>
+      </div>
+    </div>
+  </div>
+  <div class="full-section">
+    <div class="section-title-full gold">Carta dei Vini</div>
+    <div class="wine-cols"><div><div class="item"><div class="item-top"><span class="item-name">Calice</span><span class="item-price">€ 6</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Syrah — Duca di Salaparuta</span><span class="item-price">€ 22</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Frappato — Duca di Salaparuta</span><span class="item-price">€ 22</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Nero d'Avola — Duca di Salaparuta</span><span class="item-price">€ 22</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Passo delle Mule — Duca di Salaparuta</span><span class="item-price">€ 30</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Lavico Rosso Etna — Duca di Salaparuta</span><span class="item-price">€ 36</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Suolo 7 Cabernet — Duca di Salaparuta</span><span class="item-price">€ 36</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Duca Enrico — Duca di Salaparuta</span><span class="item-price">€ 90</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Lavico Bianco Etna — Duca di Salaparuta</span><span class="item-price">€ 36</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Lavico Rosato Etna — Duca di Salaparuta</span><span class="item-price">€ 36</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Etta Focu — Cantina Paolini</span><span class="item-price">€ 30</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Riserva — Cantina Paolini</span><span class="item-price">€ 34</span></div></div>
+</div><div><div class="item"><div class="item-top"><span class="item-name">Vulka Rosso — Cantina Nicosia</span><span class="item-price">€ 38</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Vulka Bianco — Cantina Nicosia</span><span class="item-price">€ 38</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Passicato — Cantina Nicosia</span><span class="item-price">€ 28</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Syrah — Cantina Nicosia</span><span class="item-price">€ 28</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Nero d'Avola — Cantina Nicosia</span><span class="item-price">€ 28</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Frappato — Cantina Nicosia</span><span class="item-price">€ 28</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Prosecco — Cantina Nicosia</span><span class="item-price">€ 30</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Barolo Bussia</span><span class="item-price">€ 130</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Brunello di Montalcino — La Casa</span><span class="item-price">€ 70</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Brunello Riserva 2019</span><span class="item-price">€ 75</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Brunello Riserva</span><span class="item-price">€ 85</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Amarone della Valpolicella</span><span class="item-price">€ 90</span></div></div>
+</div></div>
+  </div>
+  <div class="full-section">
+    <div class="section-title-full green">Bevande</div>
+    <div class="bev-cols"><div><div class="item"><div class="item-top"><span class="item-name">Acqua Naturale</span><span class="item-price">€ 2,50</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Acqua Frizzante</span><span class="item-price">€ 2,50</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Coca Cola</span><span class="item-price">€ 3</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Coca Cola Zero</span><span class="item-price">€ 3</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Birra Messina Cristalli di Sale</span><span class="item-price">€ 4</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Birra Collesi Rossa</span><span class="item-price">€ 9</span></div></div>
+</div><div><div class="item"><div class="item-top"><span class="item-name">Birra Collesi Bionda</span><span class="item-price">€ 9</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Grappa Luigi Francoli</span><span class="item-price">€ 5</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Whisky</span><span class="item-price">€ 5</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Limoncello</span><span class="item-price">€ 5</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Liquore Cannella</span><span class="item-price">€ 5</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Amaro Montenegro</span><span class="item-price">€ 5</span></div></div>
+</div><div><div class="item"><div class="item-top"><span class="item-name">Amaro del Capo</span><span class="item-price">€ 5</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Amaro Averna</span><span class="item-price">€ 5</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Amaro Unicum</span><span class="item-price">€ 5</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Amaro Unnimaffissu</span><span class="item-price">€ 5</span></div></div>
+</div></div>
+  </div>
+  <footer class="footer">
+    <div class="coperto">Coperto &euro; 3</div>
+    <p>* Prodotti surgelati &nbsp;&middot;&nbsp; Allergeni: consultare tabella all'ingresso</p>
+  </footer>
+</div>
+</div>
+<div id="lang-en" class="lang-page ">
+<div class="page">
+  <header class="header">
+    <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/7QBEUGhvdG9zaG9wIDMuMAA4QklNBAQAAAAAACgcAigAIkZCTUQzMDAwMDJmMjAxMDAwMDNjMWUwMDAwNDUyYTAwMDAA/9sAxAAJCAgQCxAQDw8QFxESERcYGBQUGBgaFhgXGBYaGxwbHR0bHBscGh8gHxocHR8iIh8dICYmJiAmIyMmKiYqJSUeEQAIAAcABwAOAAoADgAMAA0ADQAMABMADQAPAA0AEwARABEADgAOABEAEQAUAA8AEAAPABAADwAUABYAEwASABMAEwASABMAFgAUABIAEQAPABEAEgAUABUAEwAWABYAEwAVABYAEQATABEAFgAVABYAFgAVACAAIwAgACAAIAEL/8IAEQgB9AH0AwEiAAIRAQMRAf/EAL0AAQACAwEBAQAAAAAAAAAAAAAGBwMEBQIBCBAAAgIBAwIDBQYDBgcAAAAAAgMBBAUAERIGExAUISAwMTJAFSIjM0FQNEJSFiRDUVOQJTVEYWKAoBEAAQIDAwgIBAQFBAMAAAAAAQIRACExEkFREGFxgZGhscEDICIwMkDR8EJQUuETgrLxM2JykJIEQ4DSoKLCEgEAAQMDAgQHAQEBAQAAAAABEQAhMUFRYXGBEJGhsSAwQFDB0fDx4ZCg/9oACAEBAAAAALxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANaP5Y9P80b6fRAAAAAAAAOPWM0mXOoaddmMW9H/AM6Wbs2qQfdlYAAAAAAobq3I/I/6dob9I+6ksbq05ccV4Fk0vdGOjO7JZqAAAAAAOJU95qo5XXWRD4RItux6y3Z1TF2ufQv6KAAAAAAU7Er+6PB7yjp1EPFwRPe3O2qrNy7M388ShtwOfnrqzgAAAAPNL6Vx/OqNCHTbaVJ8txFatuXrodWUR/TfRQP81/pCwAAAAAK59ZIdduQAABwqevzFQHc0r3AAAAAx1xZcCgEts8AAAVDyb0wZwAAAAA/P0it8AAAUxF+vfDidXzsAAAAAQmbAAAAg8p3357kvMvIAAAAAAAAAgMm6VOSyegAAAAADgdyL6c3jvJ3ZNFpHtgceldS1JyAAAADz6AH5tuzS5NkwPl7XN7Mft8Bwa5uQAAABAoHKZJKqFvbMAUBLptw5D1qutGrbSq60QCuLHRDkduVgAAGvEYP1YROLYAIbCNWY11t3l+frsjsf3rTAGnVUMg1/WeAAAIl1+tXnQmYB49a+X59yDkdX0APzJNLXp28gAAAFdzfdAVxHbZquQ5dqL2DCcPf14rbHSAfnDq3Xi6gAAAY8mrGpeAVLMdiPSLDB5J2PUQk8HtqsbUAakdk2cAAAOZR3d50itYAq3c9a8s0/u3E7Mqy06qtWsLPADl1RdYAABHITbPN0+8AQOPz/AIXLsmrsk4068uGvo7aXZAYPz7E5HCrMvfIAACjd2vZlwLanQB8fR8Pp5fX0Dmfmz9N7dJ3YAAAicsIp9lQDDG8kj9nLwdLY+uTwux2voCluna3I64AAAABy6G4yR3xswONM1idiuaTxerftZ9Bp7PsAAAR2v5vTWS8e2BTNfi1JrXI6VjflvWPX6e6/0OdReeVWNvAAAKbi/wCivUYp39EgUDFxPp/BRksX8wh+iJf9CIZodw5VZgAACtObbuKtt+fgVLWYuCX1mO1YX5f5xsfp/f8AQVvWuTuWXJwAAGCjNb1Yc+Aa1KQ31PrhyROG4+lYW9EqJ5e/ds8Ah0o5uPvgAAAAB80vW39+MeHaHjmdHL9AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf//aAAoCAgADAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8/PX0wesvn0+e/vl8AAAAAAANXHi85vfM3eFu72CTfMHe+4duMvgAAAAAAGni8fMn3idLmbWTHLsmLsvG3FfvgAAAAAADx8x+MnvH75Gz0MO74xdT1r5NEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABDQH/AHD2tFQyRlAjA5yoRQEPGZK5mK9WdmNiC1X6sqNnjJEvQlBREx6xOreYrVThbW8SmvbXYjdRicR+53b6qYc2lxjTOtg3+5XIo1is4rIb8NxMdWaq7ASDR5jPVGGTShbExxgsFgFLTBuGGm3I9P17S+MLFZR0lZIe9Ub8ytZDHJtjMOCJ2wirZmY0y46sYbIR6quyWsHnjcyatqOLY8cznl47jEjzMsRlwyISYxxIf2jrC64GgqJkF66VzTLJEhxcpjwzVknWnc5koGkpIJHtDArK9cRUvg2pMcBid/h4daD/AHdc7fCgfNCS/wA9VPv5l8x/LrPP7NR5a6SrwuoJ/qzWYX2cpUZH+Jqd9vT46/tPapsldtMTq7Ur54RahvFgYPCjjhL73Iz/AGi7jk3BgXByiMclQZYgRHEF+GerUa0+ZcvkZD53MjttFatN/Boq0HAMesYHNh5MibPrWrvF4AwfgfVQ70W/9sN1QKViqyMxA3era4huiZYyenMYaBN7vzn66wfwqcP1Z0zfW+sCx9CUZwETMztEVy+1Ml3Y3lNfwfVW+NmLE40ittlONPfgH7NcyDso0qtMuKxRcdgbEpOe4rVWyFkBYueQlqvjUoYxwBsbPDrZc71z/k0rO0QWPFwiMXL55retUGe1qOi4gv4ie3KlCoRAY2Eepo3ov1SrqbVQBCLB0nGV07SCAGY8MmqLuQroLaQVkOlwaXdrF5c9M6fvWZgLFvdUUqK6gdtQ8Y0bBD5igfDPZDyVcjj556NokCzeX+L4WLa0bdw4DlLRgefKOOqfU0W7MIUmZD9gnWSyjskRVaMTIx01cig1lSwPbMrVNVkeDQg41TpLqjwVHEfZsVgsDIMGCGQ6VpDO/bmdKSKhgQGBGPDKVMlc5q/CFM43EZGqSx8wHZHwylN9iB8vYlMx9kZKm7zIyLz1RaxqgJwds58M9jJvo7YzEENcsnig3JfNIZTLzk2r5/hLipK+2EJmJCPDqTHlcr7B8y4uNhfZhhduem8eusgGB94m/X9Vi3ysyuZ2jpY0+UGF/NHUGDi+PIPRw4POnXPyl37u0Tv6x9K3FVmfNXXOn03Yi2LUARJPTGQESRTtEZjqc7P4NbeBmn0aEq/HMoZNNzsG+EO+9XZ9fMb+k6+wyq2RsVJ4gWs7gxyA8o9GhhM95Hetbgh43OrErMATHe3+m6ztkCVqj4N6PxcTvaON/A1wfoURP7J1m1RMWA/mj0thO0MWWx98vpursa1vB4DygMR1RNNXZNfKBwmdvWniExDA8a+RTYIwUyCIDOBjcp2iFtFkbiUFH7A7AIdZ8yzcp+ps9NVHlzlfGdV6y0DALCAGPDMVW4q35tMfhl1LE3qiXI3INdGJaJOmRmFz+89RZY8etZLiJIqFwbaQcP8AMRQMTM+kRnM4FkDqVglxF01TbVrQLfSZ/aLmVr05EXM4SUTvrIZuvSKAaWxTW6jq2GQoDnkWrmWr05gXM4SX9p6P+vqrnKtk4Wtm5yRQMTM+kQ3qCmv42B0h4OGDWUEM+3dpLtrlTY3iV2i6fsMTMSxJst3M6XbXHFUYfAqx/wB752z+09Qi27bf2x5DWwjobUrlGs7UUyu8yWMmPTNNXlUt7Q850VXlku5IbjGQEftOlExGsrWZN2i0YmRjqlxMKvTAtu+HS1IRgZVymMcucbfKoMz2Xe4yGNVdDg0d9YKz5CwzHHMFH1fUt1tWtJJ9JnpG+9jjWREYaudWJrtlXCT4qz1RswIvHedXfM5i0SQ3hChHjER8dvc4zIV1syMvZx73RzudUg/08p/DWNdMnzpJ3neYsXVoJYsLaW6y07ZGh6b+GWXtkaBz8J1mI/4hj+Px907BkV8LYkMD4566VSsxgfNrp/N+bTPeKIYv7ep8+33x5fTMWLIkTiCGbcKxNZzEhAa6Txqnqa1y4ZM3ejkM9UlKp0+lkcSMyDJlUdFzvXbM+6zOWXRXMFM9w+l6dR6J5LFjYw+Wq17VkB3BTeosuNNUrkZInYbqYaSBSaiLa1mIytioKFF+G1kKEjn4DdzZW7KHIQf4OOulaCSJJpmOpMeyysDT+aml1grhtYEhYOL5ZGz5+Y4LX7pzwSMmwoEYsdaqGdlKI9ZLqRuQWSITEQVKoVpoJH0k6PSNdE8mTLpj6bN4ycgntCfCdUag1FAkfgGuqrfYqkMfM3p1AqqJ4fze5mN/CFDE8uMb6kYn464xttt6aiNvSPZbj0NnkaQItRHu+pMoVt5Jj5FYrpAIiDtfeLVequvHFQQEa6iTFO5WtjG2/wBVm8FORYqe7wAK6BSALH4B7jI5tkO8rTXDW6f1Beox/eqw/equ7yls225vzl9diK3YVJzm8hcqQLEqAlxg8hauDBuUIrnLZxdHiPGWMJ/U1hI8mUDGNY255xC3bbc6uRv3eZoBMLinksjbJoCKA7WGyjLRPW2B5oy+fimYpBcuaR9SXUzydT4r1VshZWLVzuJe46soSh/fH0Fq+tSjtwSYnatYGwsWh8p2qa7QwLQ5RH08zEfHwc4UgTC9BHDZeMiJlASHD3PSUwzzTdvvHmq4WKzFmcL3xO0V1BDBZwL/AJsO+sv/AAtnWELlUrzrKwVK8F0hk06+3aFkSXLo2LEVPK11q5QfHG0fKBIb779OFPeyAz+lHFxVdYbE+j8EHfvXnlHqBBBRIz6xPSv4Xm6v+j7hyAcPFgwYzHT9OP8Apx0tcLiBGIGI+nuWhqrNp/KFXFvzm9l7uI6Do8x3iLhCOsl05YUky83LQDo1cjWMpj0L3PS8dmbdedolfVNdR1pY3fkvpamKaoMiPvNcUhllf5HmJ2q2dYD+Dr6oXpe62ov8F+JrPieaAnfpiSGLCt+Sla6f/isjG/hiGjXvXUFO0s105HcdffHwP3d2x5dTW/0dLZZthzluLlz+lzFWbNZyh+YukLcdoqxejF6t8O2cNnYJx2PVTCRT8pe5yGGJjfM1m9l+rGAt3f4qzE8cbVKshSimJkM1hpuyti2dpqnYq5cEFWXDCxEYGIiPhD8Hai0yzXcIcm0MjdjtuctIaoUF0lwpcemsoiy0IGqwVlqr0vaURM85wMlxIjETO8xnMDNuYcguDhhGYePZZMLHVGkFRYqCIiI9wbIXEkU7COV6sY6eNaZUMIrXn/fXDi3ZQyxLKD7hBOPpNtNhavm1X6StgfPzAhMD8PX1+jy2ct+bKvV/TzGZgd+0M7+RyEN8xCmQyV9Q5GI2mpymMn1I+wnssV2i101v5RcSUFt+wXld1LQ/r6ZlUWh7222kuBscllBx4YgIHLWoj6UMMsbRXN5ky8c3QK7XNQbcpwlCaVcFF83uTOBjcp2iDzlUZ27u+l5qsc7Q2I1E7+wy4tfoReuvtJP9WltE/UZ39ixeVX/MZA6/tFU/1NVsimx+WyCn3WR6P7pkaGQPLpvE2aJshsx2y0ukpbTcI7MZ+w3LY1glh/pdyDLRbnPp447KsqTHryDSXC4YMJ3gtXb8nMiE7D4gchO4ztOqVvvx/wCUazua8t+Er8yTZJzyKZmZ1BTE7xO06wWclkwl07z7ljwVtzMR3id/p8hlU0Y3cW0y7rZUflpMtYfIHeXLDV2tWK2Vewz2ZoeochTMfMDMjrHXguKFwfCfb6ktcmwr9A9jpmzM80z+mRdwXO383sU29tgzpzYWBHPwF7pcZGXxLxEpGYmPSYx9nzCVs/q9q2+ELY2fgGOwx5juWrDJGCwrX4+75I5mQJ/VyVOlXbKRGu8HhBrKCGfpOsqQSsbG8846YwY293t9QDwy+NG8kll8Y6NeY2CVHyF7ed/im+z0x+eesv8AIPsh8Y1kv4d/tdPx/dFe31DG9OxtrBDEU6+2pgTzMevqGb6YFYvsrZro8+VTb+n6Tq6vLam8f4fR10CSSPgYaIoGN5naNZTqhVf7iNnMnpzGFUVJM/Nb7fUtTYhfEek+x03U4ATZj57ye6uYj4x7GPR3GRP6CQQUTE/CblWazCWX8vipUtIQGN5KqiELBcfy+11NkZrqhIBzOxiM27GxK2qMl6+2kFkV24ghDWb6iC0HlqsScswtDyVdap+b6Vi4MZEo3grHSL1FJ1XfAMbmCjhJmMRPSl18x3njOsV04miXc3lh+5aoWjIFG8FkMGyvO4RLA8Ijf0j11jcATJg3xwHUDAxtH6au47lMmHx0QSPpMbeFembvhG0ar1xSPGPDLYkbo/0mNqi2tOzAmPCvVY+eKwktYfCxT++f3mT7eYxEXxDY5Wa1DIiMFPKYfjK7/wAxIFOq2Kr1p5KSIl+ysrLZ86xLS64L+QBH2SCC+Mb6hAR8AiPZmN/jr7PR8eyG+hCB9Ijb/wCcL//aAAgBAQEOPwH+4fUksIp7pHw1P21tF6ww3E74vyTZieAO+MC/zSmJOaLyoJ5K4xVBq2IyXGCQUuTrm50zhIJtBwAZt6wOypICZ3PKnsQXAJm1CNR45Ae1Qp1+88eNVA12Oq+ACxKkzFwqOGeHY0tEXEY6P3yhwkFpYmuqRiSk1Z+Rul8pSFSlaLnh94TaSb5VGXpFJAwSFUEJBo0iL9VXhvxLPh/ma6mGrL0ldIVHRoO1IyInnkkccibP+fZ3PClE6jZ5ZCkHS9ngRlw7JGioI9vAadWwUK1oRDWjQSuHymlQ2xjCSGzgMd/rlMujBYLIvOi/fGaZA2PuEC3bNSpPtgM+M4ACv6fh9IAUNcWD/wC6YDIWB8Ix9Q+fPRLEAaXA3RMvUB+dTkUBs7XKBZUnnr4yiZMeE3OKbVTGYZfqDwsWmoB8YfCoGeQ+T/xOl9M2iuiGJFzH4k58caYEUOTxH3jfltDXKAAEzcAXMzwR+J0qpBhm06zoePEmyxO9t2qAwGYRZ3LTHRouceHPFDZD7a5UnpFA3zpuGqMKbmbVGDudTAbSY3nExiWydlGk+gnEk6E37cpYOWnAd7mh+29wvstz3y+Q+PpKA67hxulVXiOOBu/pN8Y+3gktWvVuMXFRi4BhlwNRc9TsAgzQ5PZvE0CunLdcrnxipd3FJ2rJ2GB2k4ZVBSXo4+xiqSQphmYlQ4ZoYM72X8Ru4QAE2S4YZTaAxkZb4+F5QkFSq6tX7/IFD8RvpnzZ4/iY2jjqpHhP1DA8oklSpFOY5jceVPK32Q+2sGSUuXF6TyfJMnCJWviW+F44mBRLMncXzz0Yweyu4Pf/ANhrGf5AoDpeioLN5GioDSuwyA2T9WY+5QZGtnMb2vDPBDkSbRifb+XJtfkaW3hBbo9VTyGvJjP5IO2cxoDxjwA/CnHSeHl0kKxE6tD2CC1ZsdcHt9kCyMX4Y0y+Ie+UXmQi8Fx8gbsHwuPdPM1slgdXpFwyl8znxJOm7dODaIGBHIyMAVDAq/b50q+jDZApgbxti+KqSHEpyqTwvhRITekFpbZ6/lNJE8AcgdgHlHhdJDnJMBiZagY/lX/1igIUl9oGTB1fpeKEdxtBxEdpNx04ZjTHNFR8I/qNTqGqBNXoPlSA5wAmd5MIA1p7J3iOjUymDhp1rWLRtkC1UirPk/08iZgKt+kJXrkpoJBYeHnThCu1odhqeZ0R8VpTnYQN0JtIBxH7Hn3NDenRCn6NQxIdjq3y82Qkq+kF57ZQm0XL2Trx+8FlKDVzYtqjHs8WGRdkkUDfFnOHsxf3SiBIlwSt6A4wsjUWPF46LpP0mLQ2KPKFWUZzkte9WS0BpH3IyWn0D7P3TFQm7gNo35ZA4PfHiLgWhjdoMbP8vDv8tUGYMCTXqMk55GFt2hakAMcXi7xDiDvi9JtJH5TTZrjpTP8AKnukq/DAx+xg9u0l2ejPK71gp/DkSHTWQczJlKlYSoDAXT2wTMNQzjpApzg4we4TnAJN5lFzOVY0e6V8FrK5HTdCrSWq2bdsirBwrg2vbAKOiSRM58L7nw091eS0Xk2OSuUVZ1GRf3KDfm+0YyTs9T5dQVmLPA2m86zkNjVfugWlZ1GvoO8vaeS7rXlIJ4d4ohIvKqH7R/tgsBpNdkYBoULbYpPMebBcM5nhACRq7nxE+FLXVHEC6tPCoFg+oqG8QlKm0h4o1ouNLjeBCe2S5Y7QW1aYHZUCxP5XPLNFECvO/TF5UWGnsekCmcFoUQm3actoPIQqyom1UYTMKCSUPZNcXN0fCLnpcZm4RXsrB/ypuinczfBY9vH8QvM6LhvwzwHEF9e4+aBJ0CC1X9O66SuYz5xRSiwBExXfmhIBUlVoOBjwj/TS/wA46Jf6TCBuhLKInYk332wGIUCmukAQ/aF4JJ5wtSv8j6R0xO0q9IINnAh33mFWU5pkcBEjHSnYZf8Az3NxnGmKASA8wHgskM+oCQG/PFwSf+4G6AVFCrQkmeKhwhZbUAOPddKTqMtkpR/DI+pXucTVqJbdHQkbLR4iOiX+kwm/3szQoAaCPURfZAO2sdKR0Rr2XN9NmTpafmXPIsLQMaqPGWTpWSdDngR3iVKbQI7Yc0LzA23YeWTLSJwomyasfQyOQEK0GUKerzpy7oMSzpVp/Y6IHYSkStYmQ4HNAYtTlHhVjzldwjx2HfpGasg20i9okIYsXnKYMmbCu2cV/DBJVw4jPE85JvMGZOGaRjxFIJd8ZpvzQJnHPGdnbPiLt+aSlulyPyudgGcxXObzUnaTh3IcnACHdV6t0o+J1cYqCsKfU5Mama+DJQKieA4+UkAEhRJZ3mD7nGZLjU+u+DbtAXnNy1NF/wCH0g2+xBBJDimAMxPOYdiMHpdT5ChQ2iAbNqgVrzO2eL0lxkC96k+VoLhKzw6jFL5j7EOVaT3N5pGAJ5NGIKeIA6uvhGY+nV27Kx/Kr0i6h2GfdTsKEn0z4QKAv2sdmQAKOLfIt5wiibhlqn0imS/HqVyVP0j1Pu6LzM5fCrHMeWOnuaOQH2+YokTJj6iE8LUFgHdwwL3YwTRVgS+kONXrHwrRYfQWB4xUXg3j3p7gT0n7dXtJ58ol1ZHR7nAJOqC56nKBPTfv66SrZBNlp8X7IoPbkhtThQ0374JSpcrsB9xFCPKkIa5i5hTBP1HPmG/jkmg4K91hJJGcNPl3Fn9Cer0Z4phXI9Ux0a/0nrWv1Hrp4EQgbTXfHR7TZ9C8OuwRtnwlmhahwPPyqwo6JjnBKmxSb9tcl5jCaRrv0CC6sQLh69xJWm7bTq00D1iY6s/euJQdouPULCAB13SBWVDrnL29xcFOh+EsdIZbib2Sm4m5oYFTbgKz0CJq/qPtvKhiMxjwzKVDWPtF/wCKORJi8qUs8OcBnLNqH37msYVGn3sy/Der048ctRjGOS80y+FXI5vem+468mwctsbE6Oft+uXQrT+2MAOcTjF7B9tYvv8AkuIBjAAdbMOt/Kn0/wDHD//aAAgBAgABBAD/AGDOUeM2lwJQWuUR9Q0/BR6y10h31j7kqYe2gPb6dkbaTG+YVI6rLk2j4x9OQQXY0AcbFcXFg9U8eCJjckaBe3/sZ//aAAgBAgEFPwD+wZflLFadsTBfzZbJKD+Gn82RaR8KoEsh8wo5FR0lr6si0pF/UHmL8gsqgyXKP5lfV/yQ/9oACAEDAAEEAP8AYM3jx7ZT4CgyIZH6c58ALVdcTpyoLH1YbttZrC0h4/TF4DqqXgwtsSceBlxcXL6aY34aiNgOR83pjpNbJAMvOrWQJ3/sZ//aAAgBAwEFPwD+wf8ADlDhJgsQ3m+0cgzwp1eFORMEg3eXOQwlsgeCtOOVSlYk+aLiLshtJrA7SI7I7Kf+Rv8A/9oACAEBAgE/EP8A0PwxEYOq1ad1nnrEO7WDaWOXcPVFXFwBTvE8lIGAEFxHCOp4EiODBLAqAxRraopQdmMfdOIYZ2A1aH1BB5FArUSD1Ayf0Y8CS5U2TCJceSlNZpjEwlwdChmyw7lJvu3pAolqYWQunpHZQ9l04BGxGPDY5A84MjeMUxuZgu8pLs2buau59Ay6A8/kq2IazrOIa9DHwJFHtSUSYCzwGpqAlsngzrqIYftOWPAbEuno/SrliHuAm+Z8/G7maskcFqhV4kMlO51KedUEKcZ6U0EipHDpHhPfoOR7Jj0KALHnA8HgOg2eGWfmfWE/V7VrkS6wPd38JTR2ok8yeF5ZYxOJ0mi70YsHPo1B4d0CdChZBnNcDKdTAcS31+0zp7NyLGV2MV2FdR5Jf38RnO4dJHDLDoa0+v2NlXmdTkek9LWm7U0sp7hOHn9ZUxd6bMGSTehbvDrB7LQvB5lZAcYyPNTd4S5upBxKeM1K3oLON+XY6GngP6jr3qPOoHDui9ufdQIwFFgC6roV0bc/id7xOPZDHpOO1AW62/3gPQfZ/PvWvqL8OWkl4yEh1MDAxBoBLjn3BNEbJ4XeXuLllgcSvDxlrCXql6h6VbSuUAg2SutqOAfyR2CStr5gIcT62FIy1bIICobw/Mfitd0wpYTZb3pnFWxfL7vHneCZ5k4dzRG5d51kk/JxrX+oGBIdaAfVLvBCjltRokKAgJ2vrQzUv4/afYeyrD0gOZnuSdnfxDZ8iQdktIFBSmWMs4ilVplplnhJ32fYBBd0rHTK/ge9R+mLh2jkLS5K9psuRLHkrcdCYOUTp8OeuvuGzyXoFYdh73vWPOhg7Hjn1OhMyJLQcUa3ikvYEeKBIcwzbpYn+KxGcSbTcFqJDqXZlKepDGkx4pNkQAkKYlPSvz5IIEPRTScTUpdiX4FSQ+AQEFzxX+nbB6okckUoAuM1/TrestDcaMdhSdfJ9eg0QGqIcaS6FMhZWO+/0bdGrFi/kL3aPWvJ4mC2+Ho5RQyII4S5HH0snMOz8gpHTGrCbid/7UNB8OosAyrTbP6+hWRA/wCGKIMmpOgZkHAUeemYvLH2BAhCRyaRtTu9gOkuIbtSeB7RcS3FOHlUe3GwrjaHcOlLlvlhJjI7Fj6dkTpTfKQ2VM/lWEtd/wA9zwBAURAAkw31+yHZddjd5rwHmhtHcw/jt1fT2nuZgu5DePauNnQS7CWc9a5FCC7ERGh8RsCwE2vGpcm0yKREzEAN1cVwDBTdT7BIbbyxA0lLcJ8vqb3Reb1gt6KxsgCDq7vLfx/qxy+v9CtSrGeUH4i9ZM2YA2icxKY4+9QQB2rCVw3NvWrape2Fk6BKUMAqmADKuhUPTxC/Fboc9xoi5bMFBdjD7SIBg8CYlsDloBIyONaRXBUO6CYxMPlU8ghAE0mLPXwjNJwGtLad9mjNSagUqWTaM2KQMAqtgDKtPw3+txCsqBVI/I9BShhNE/rUNrMvQ5O+g0FObmCfwsdDVQsViF03NI832+vWPl6wgIs/NwC9qQib94fcKnbKdrojBTfkgpG1haxoeEPhQrjLbN/rScxbb9rCWrfyvYvK7pcHVUuL6In3kQoxol0HM/jFX+ITufp5I0fJTeVbbrTph1rscoR7yPQN0n1dgJyyCxswJaTvFSRmkrkiHC5tr0VH9TLYMwf+itLgiWXJk4mhmmnbvLor0HTF6XhYAldYMvPyo6WiBAOEG6I+rwMlXAPI55Qqxs4hcNrFshffwm3Yc/jLz8P2J1p4KXce5C/KBjGT4ZtkReHR8dsjbXuMtveKIkAibBjh5E9YoSKdbX2vpgyowMBsjmnp/wCwy6SY2mmKWMVwMcmXFfy1OAQeatePC6kfNZRLwWTd8oOyhEzZmcAhr0q8uLXB1iI0azTkFmQYAEzQ0K2MrbRJXsPSrHA65O7WV9Kv3LZbls4BIqTk2yGAywGW1NccyU5QhQdcGApYYSKLxjSv3HoRykVLag1VNryO1lOXYkUzPqfofLZwKGHrrxUELs+4uedISTOg47Ri7R2iEnAgqvQYqwAUGi4t+4cfT2KCQkwBDHWeoVp2icaicovhKyyHVf0o71BTG38UR0A+UOYPW9BUFC8xC75rEBje9LWXQI8qMgQGAsR8P+l++ZVAQWj5ennUYGTvJharrJquiLnsOtcBvKXWMvLUSJzAU+fHb6tcwBqJM3Bex21rUbpuwYJ5+TBZZU4E4XOUDF1HoYIWsh0kr0ZMRQ9atdPG8dcblgbVOhRnPx1zyKuRcImYyscvcr8qj4FYhIjC4qxK/wDIC+jKtcUnYhE9Rr+6f7tzQxObf9o2qJXyABNpZHWryCfII6B+q/v3BOqND5WvImiMifJh7ojqfOPXVigHqy3kh7FL4gJLMO5vRxjCKiDCIh9RCSCbGkux4MLJPglrD2W3ZJmx5Pla7jPWe6kMOyYjydEcjQdQPEImBp7KH8DM/dAqSZv80V1fuQO3PVSSO62LnWavxMAb6U/c/ah2h3mtRlJUl+x2s3azR/UVL7dEzBQ0RISs5ewd5P39/ksM0AB61/2l7tBXMBANgMfUa9YRlvAHKoU15hwXlAN7lobLGTtE5FDk6ksmBMYKX8DX5kOlmvysGyHsOh3VuSAbBGyNuioId9nMXiFP+1NQ+pX8JuFHeLeWX0/BR5EPedbmE86IblsuOsQDzNEZ6pq5jIa8l+DiJLnBx9JMbT4ZgP4j+ZKwkxm5ZDu06GLbKx6ESjD6Zs8DuoTukV36VCz5uxbfwDnDtYsyvzMUW6IveIUL8ofiVkEiMp0tOgcq1njY7zDkibKmbFJatJlVzMs2qSYsldE5adXPi2BLquKTTgQOAgKtHycYuS/gCn7azC2cdBUAKal5BNXB2K1uKXRhEF+O9CXlw6WTJqvSEXAsCgvAxOa0njZbay5qKBTfsUbpaBpEhES5JuOwjR8krzC7AJVa2hCHHmXbeo44pPUEvWorgvt5l6Fcg+Vs5Jzbi9E/3UJ+RQIBSAlxLv8AR4tW3pZwEeUFNOnjB9HP8Yp8+pBGzfjQu/xBAxS8o6zeTgBmjPHmTa5KS6UfYVPuj9XD3qOm12Kmz8BV1mpEmMklvA1Nbz/5+lbwAwFmki6o13fgvFbmZrOiky5rithklWDoQfJREzEAHK1IgR/rFE2BxHn6xQARkcOfgWgmoJR1uiiiAYJ3GfgKni1u6C7y8H7X5cHY9Hyr72ZCCzbhOmFYcG3OZhpmO9tvC+NAWzC2DBjMfYk8tga6A5aXcXT2DfnxApau6auxqIwpVYqNMaLefbxOMCgu2sD8nHggmsdax/Fu9G2WyKPK+BJAYSzO41IHf7Gu75Jnk4u1sSu0AkZHv9OdvTEs8wbcsHh2mWyjyoAX5VGpjNQ7i1wu04QpLOo95ZxXVdWzycnqRq+QxbbI45/HzfhMZp4CYPm+ZptcQe8z6D8LaYp1Fv5xXpKNFX2q5E7ufj4EDkCOGcErckexb0H47rMK3isd8V54E0vsYTriKay7JGWy+RnRXPpsCh3Cf0VlGKJP+PGn0sQzdR61OtdicMQXyFvwigQQWjwLjNtQY7OB/wArtCFlh6vNx8g/DQVF6J8IceYR5/Ggi+P7myu7IfQaBcZ/U9ysRrPldqzhSOoGbLz/AAa/tJH0q/VM/wBNL0mpk9lB7os7N/B8IsoAd2jlMF62P4ZKN/8AKk85eTGnyHsUdpk9HoPhePmJ7/u9qX3MCadySm3wNsCupg/mjRNSKuiQ1muSH+CSPgjpIHLWEzrkF3u3+OFIIyyywZVg38qTdxIHZSIfM6qOJCyhdgmB1M2pXcyg1yrlWv8Ao5UH5ZfL2fShscVhCEe1CkusZN2l0nKtwFnuO0rf8hyfwVGG2mTF4LNsyy/JMUaA6lPN8Ra2B7lqJTsBToXVpsA6/WNFBAIAAFgDB4a0XRW5zTMpbBH18EvQbs37UA7rqu7UVk11/Bf2eZR9sn22D4T9fB5jhQ6aHC6G253fITIGATDCdnRcsioIqI4gLw0lvV5cavSvyroQLPYsp2+yrynu56lfxzux8IEEOQSr+lwX4+BoBAkpdlzr3nQAEDAEen/zhf/Z" alt="Chi T'Appititta logo">
+    <div class="header-rule"><span></span><div class="sq"></div><span></span></div>
+  </header>
+  <div class="grid">
+    <div class="section">
+  <div class="section-title green">Appetizers</div>
+  <div class="item"><div class="item-top"><span class="item-name">Sashimi</span><span class="item-price">€ 20</span></div><div class="item-desc">Caramelized onion, lime, salt</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Selection of Cured Meats &amp; Cheeses</span><span class="item-price">€ 18</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Beef Carpaccio</span><span class="item-price">€ 18</span></div><div class="item-desc">Rocket, parmesan, balsamic vinegar and lime marinade</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Beef Tartare</span><span class="item-price">€ 20</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Great Raw Chi T'Appititta</span><span class="item-price">€ 45</span></div><div class="item-desc">Tartare, carpaccio, buffalo mozzarella</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Fried Egg</span><span class="item-price">€ 18</span></div><div class="item-desc">With truffle and parmesan cream</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Fried Egg</span><span class="item-price">€ 15</span></div><div class="item-desc">With truffle</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Carpaccio with Truffle</span><span class="item-price">€ 26</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Japanese Wagyu Carpaccio</span><span class="item-price">€ 35</span></div><div class="item-desc">Mango sauce, chili pepper, fresh basil and soy sauce</div></div>
+
+</div>
+    <div class="section">
+  <div class="section-title red">First Courses</div>
+  <div class="item"><div class="item-top"><span class="item-name">Potato Dumpling</span><span class="item-price">€ 18</span></div><div class="item-desc">Piacenza cheese fondue, guanciale and crispy bacon</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Pappardelle</span><span class="item-price">€ 16</span></div><div class="item-desc">Wild boar ragù</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Tagliatelle</span><span class="item-price">€ 22</span></div><div class="item-desc">Porcini mushrooms</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Tagliolino with Truffle</span><span class="item-price">€ 25</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Orecchiette</span><span class="item-price">€ 22</span></div><div class="item-desc">Courgette cream, carpaccio, burrata and flaked almonds</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Tagliolini Cacio e Pepe</span><span class="item-price">€ 25</span></div><div class="item-desc">With beef tartare</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Tagliolini Pumpkin &amp; Sausage</span><span class="item-price">€ 18</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Busiatine</span><span class="item-price">€ 22</span></div><div class="item-desc">Zucchini cream, cured ham, burrata and toasted almonds</div></div>
+
+</div>
+    <div class="section">
+  <div class="section-title gold">Main Courses</div>
+  <div class="item"><div class="item-top"><span class="item-name">Tomahawk Steak</span><span class="item-price">€ 7/hg</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Rib Steak</span><span class="item-price">€ 7/hg</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Florentine Steak</span><span class="item-price">€ 7/hg</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Fiorentina Angus Miguel Vergara</span><span class="item-price">€ 95</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Rib Steak Angus Miguel Vergara</span><span class="item-price">€ 90</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Cube Roll</span><span class="item-price">€ 30</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Sliced Beef</span><span class="item-price">€ 25</span></div><div class="item-desc">Rocket, parmesan and balsamic vinegar</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Sliced Beef</span><span class="item-price">€ 25</span></div><div class="item-desc">Ragusano pecorino and caramelized onion</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Sliced Beef</span><span class="item-price">€ 28</span></div><div class="item-desc">Walnuts, honey, cherry tomatoes and chard</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Sliced Angus Beef</span><span class="item-price">€ 25</span></div><div class="item-desc">Roasted peppers, garlic, basil and salted ricotta</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Beef Fillet</span><span class="item-price">€ 26</span></div><div class="item-desc">Saffron potato cream</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Fillet with Green Pepper</span><span class="item-price">€ 35</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Truffle Fillet</span><span class="item-price">€ 35</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Fillet Heart</span><span class="item-price">€ 40</span></div><div class="item-desc">Porcini mushrooms and truffle</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Fillet with Porcini Mushrooms</span><span class="item-price">€ 32</span></div></div>
+
+</div>
+    <div class="section">
+      <div class="section">
+  <div class="section-title green">Side Dishes</div>
+  <div class="item"><div class="item-top"><span class="item-name">Grilled Vegetables</span><span class="item-price">€ 5</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Syracusan Potato</span><span class="item-price">€ 6</span></div><div class="item-desc">Sautéed in a pan</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Potato Dippers</span><span class="item-price">€ 6</span></div><div class="item-desc">Fried</div></div>
+<div class="item"><div class="item-top"><span class="item-name">Mixed Salad</span><span class="item-price">€ 4</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Caponata</span><span class="item-price">€ 6</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Swiss Chard</span><span class="item-price">€ 6</span></div></div>
+
+</div>
+      <div style="margin-top:24px">
+        <div class="section">
+  <div class="section-title red">Dessert</div>
+  <div class="item"><div class="item-top"><span class="item-name">Chocolate Soufflé</span><span class="item-price">€ 5</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Pistachio Soufflé</span><span class="item-price">€ 5</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Melissa's Tiramisù</span><span class="item-price">€ 6</span></div></div>
+
+</div>
+      </div>
+    </div>
+  </div>
+  <div class="full-section">
+    <div class="section-title-full gold">Wine List</div>
+    <div class="wine-cols"><div><div class="item"><div class="item-top"><span class="item-name">Calice</span><span class="item-price">€ 6</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Syrah — Duca di Salaparuta</span><span class="item-price">€ 22</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Frappato — Duca di Salaparuta</span><span class="item-price">€ 22</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Nero d'Avola — Duca di Salaparuta</span><span class="item-price">€ 22</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Passo delle Mule — Duca di Salaparuta</span><span class="item-price">€ 30</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Lavico Rosso Etna — Duca di Salaparuta</span><span class="item-price">€ 36</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Suolo 7 Cabernet — Duca di Salaparuta</span><span class="item-price">€ 36</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Duca Enrico — Duca di Salaparuta</span><span class="item-price">€ 90</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Lavico Bianco Etna — Duca di Salaparuta</span><span class="item-price">€ 36</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Lavico Rosato Etna — Duca di Salaparuta</span><span class="item-price">€ 36</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Etta Focu — Cantina Paolini</span><span class="item-price">€ 30</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Riserva — Cantina Paolini</span><span class="item-price">€ 34</span></div></div>
+</div><div><div class="item"><div class="item-top"><span class="item-name">Vulka Rosso — Cantina Nicosia</span><span class="item-price">€ 38</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Vulka Bianco — Cantina Nicosia</span><span class="item-price">€ 38</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Passicato — Cantina Nicosia</span><span class="item-price">€ 28</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Syrah — Cantina Nicosia</span><span class="item-price">€ 28</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Nero d'Avola — Cantina Nicosia</span><span class="item-price">€ 28</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Frappato — Cantina Nicosia</span><span class="item-price">€ 28</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Prosecco — Cantina Nicosia</span><span class="item-price">€ 30</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Barolo Bussia</span><span class="item-price">€ 130</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Brunello di Montalcino — La Casa</span><span class="item-price">€ 70</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Brunello Riserva 2019</span><span class="item-price">€ 75</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Brunello Riserva</span><span class="item-price">€ 85</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Amarone della Valpolicella</span><span class="item-price">€ 90</span></div></div>
+</div></div>
+  </div>
+  <div class="full-section">
+    <div class="section-title-full green">Drinks</div>
+    <div class="bev-cols"><div><div class="item"><div class="item-top"><span class="item-name">Still Water</span><span class="item-price">€ 2,50</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Sparkling Water</span><span class="item-price">€ 2,50</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Coca Cola</span><span class="item-price">€ 3</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Coca Cola Zero</span><span class="item-price">€ 3</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Messina Cristalli di Sale Beer</span><span class="item-price">€ 4</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Collesi Red Beer</span><span class="item-price">€ 9</span></div></div>
+</div><div><div class="item"><div class="item-top"><span class="item-name">Collesi Blonde Beer</span><span class="item-price">€ 9</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Grappa Luigi Francoli</span><span class="item-price">€ 5</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Whisky</span><span class="item-price">€ 5</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Limoncello</span><span class="item-price">€ 5</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Cinnamon Liqueur</span><span class="item-price">€ 5</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Amaro Montenegro</span><span class="item-price">€ 5</span></div></div>
+</div><div><div class="item"><div class="item-top"><span class="item-name">Amaro del Capo</span><span class="item-price">€ 5</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Amaro Averna</span><span class="item-price">€ 5</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Amaro Unicum</span><span class="item-price">€ 5</span></div></div>
+<div class="item"><div class="item-top"><span class="item-name">Amaro Unnimaffissu</span><span class="item-price">€ 5</span></div></div>
+</div></div>
+  </div>
+  <footer class="footer">
+    <div class="coperto">Cover charge &euro; 3</div>
+    <p>* Frozen products &nbsp;&middot;&nbsp; Allergens: consult table at the entrance</p>
+  </footer>
+</div>
+</div>
+
+<script>
+  function switchLang(lang, btn) {
+    document.querySelectorAll('.lang-page').forEach(p => p.classList.remove('visible'));
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('lang-' + lang).classList.add('visible');
+    btn.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
